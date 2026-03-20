@@ -64,20 +64,6 @@
         .btn-secondary { background-color: #636e72; }
         .btn-info { background-color: #03a9f4; }
 
-        /* DNA Legend */
-        #dna-legend {
-            display: none;
-            max-width: 700px;
-            margin: 10px auto;
-            background: #fffbe6;
-            border: 1px solid #ffe58f;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            text-align: left;
-        }
-        .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
         /* Simulation Area */
         #simulation-area {
             display: flex;
@@ -89,25 +75,25 @@
         }
 
         .section-title { font-size: 0.9rem; color: #636e72; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
-        #offspring-grid { display: grid; grid-template-columns: repeat(3, 160px); gap: 15px; }
+        #offspring-grid { display: grid; grid-template-columns: repeat(3, 250px); gap: 20px; }
 
         .flower-container { 
             display: flex; flex-direction: column; align-items: center;
-            background: white; padding: 10px; border-radius: 12px;
+            background: white; padding: 15px; border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 2px solid transparent;
             transition: all 0.2s ease;
         }
-        .main-canvas { width: 140px; height: 140px; background: #fff; }
+        .main-canvas { width: 220px; height: 220px; background: #fff; max-width: 100%; }
         
         #offspring-grid .flower-container { cursor: pointer; }
         #offspring-grid .flower-container:hover { transform: scale(1.03); border-color: #4CAF50; }
 
         .dna-stats {
             display: none; background: #f8f9fa; padding: 10px; border-radius: 6px;
-            font-family: 'Oxygen', sans-serif; font-size: 13px; text-align: left; width: 130px; margin-top: 8px;
+            font-family: 'Oxygen', sans-serif; font-size: 12px; text-align: left; width: 100%; box-sizing: border-box; margin-top: 8px;
             line-height: 1.4;
         }
-        body.show-stats .dna-stats, body.show-stats #dna-legend { display: block; }
+        body.show-stats .dna-stats { display: block; }
 
         /* History */
         #history-area { display: none; margin: 30px auto; max-width: 950px; padding: 0 20px; }
@@ -117,7 +103,7 @@
         .history-thumb { width: 60px; height: 60px; background: white; border: 1px solid #f0f0f0; border-radius: 4px; }
 
         @media (max-width: 768px) {
-            #offspring-grid { grid-template-columns: repeat(2, 160px); }
+            #offspring-grid { grid-template-columns: repeat(2, 45vw); gap: 15px; }
             #simulation-area { flex-direction: column; align-items: center; }
             .legend-grid { grid-template-columns: 1fr; }
         }
@@ -139,14 +125,6 @@
         <div class="goal-label">Current Breeding Goal</div>
         <span id="inspirationText">...</span>
         <button id="resetGoalBtn" class="btn btn-info">New Goal / Reset</button>
-    </div>
-
-    <div id="dna-legend">
-        <strong>DNA Glossary:</strong>
-        <div class="legend-grid">
-            <div>ST-W: Stem Width | ST-L: Stem Length | LF-W: Leaf Width</div>
-            <div>PT-W: Petal Width | PT-L: Petal Length | NUM: Petal Count | HUE: Color</div>
-        </div>
     </div>
 
     <div id="simulation-area">
@@ -172,7 +150,7 @@
                 <tr>
                     <th>Gen</th>
                     <th>Appearance</th>
-                    <th>ST-W</th><th>ST-L</th><th>LF-W</th><th>LF-L</th><th>PT-W</th><th>PT-L</th><th>NUM</th><th>HUE</th>
+                    <th>Stem<br>Width</th><th>Stem<br>Length</th><th>Leaf<br>Width</th><th>Leaf<br>Length</th><th>Petal<br>Width</th><th>Petal<br>Length</th><th>Petal<br>Count</th><th>Color</th>
                 </tr>
             </thead>
             <tbody id="historyBody"></tbody>
@@ -186,14 +164,14 @@
     let historyLog = [{ ...initialDNA }];
 
     const goals = [
-        "The 'Sunflower': Breed a tall plant (High ST-L) with large leaves (High LF-W & LF-L) and many thin, yellow petals (High NUM, Low PT-W, Hue ~50).",
-        "The 'Rose': Select for a thin stem (Low ST-W), tiny leaves (Low LF-W & LF-L), and wide red petals (High PT-W, Hue ~0).",
-        "The 'Cactus': Evolve a thick, stubby stem (High ST-W, Low ST-L) with barely visible leaves and bright pink petals (Hue ~320).",
-        "The 'Pinwheel': Stabilize the petal count at exactly 5 (NUM = 5). Aim for long, thin cyan petals (High PT-L, Low PT-W, Hue ~180).",
-        "The 'Vine': Directional selection for an extremely long, thin stem (High ST-L, Low ST-W) with a tiny green flower (Hue ~120).",
-        "The 'Shrub': Breed a very wide but extremely short plant (High ST-W, Low ST-L) with exactly 3 blue petals (NUM = 3, Hue ~240).",
-        "The 'Violet': Select for a medium stem, extremely narrow leaves (Low LF-W), and exactly 15 purple petals (NUM = 15, Hue ~280).",
-        "The 'Pom-Pom': Evolve a massive, dense flower head by maximizing petal width, length, and petal count (High PT-W, PT-L, and NUM) on a short stem."
+        "The 'Sunflower': Breed a tall plant (High Stem Length) with large leaves (High Leaf Width & Length) and many thin, yellow petals (High Petal Count, Low Petal Width, Color ~50).",
+        "The 'Rose': Select for a thin stem (Low Stem Width), tiny leaves (Low Leaf Width & Length), and wide red petals (High Petal Width, Color ~0).",
+        "The 'Cactus': Evolve a thick, stubby stem (High Stem Width, Low Stem Length) with barely visible leaves and bright pink petals (Color ~320).",
+        "The 'Pinwheel': Stabilize the petal count at exactly 5. Aim for long, thin cyan petals (High Petal Length, Low Petal Width, Color ~180).",
+        "The 'Vine': Directional selection for an extremely long, thin stem (High Stem Length, Low Stem Width) with a tiny green flower (Color ~120).",
+        "The 'Shrub': Breed a very wide but extremely short plant (High Stem Width, Low Stem Length) with exactly 3 blue petals (Petal Count = 3, Color ~240).",
+        "The 'Violet': Select for a medium stem, extremely narrow leaves (Low Leaf Width), and exactly 15 purple petals (Petal Count = 15, Color ~280).",
+        "The 'Pom-Pom': Evolve a massive, dense flower head by maximizing petal width, length, and petal count on a short stem."
     ];
 
     function setNewGoal() { document.getElementById('inspirationText').innerText = goals[Math.floor(Math.random() * goals.length)]; }
@@ -280,9 +258,16 @@
         document.getElementById('genCount').innerText = generation;
         const pCont = document.getElementById('parent-container');
         pCont.innerHTML = `<div class="flower-container">
-            <canvas id="p-canv" width="150" height="150"></canvas>
+            <canvas id="p-canv" width="220" height="220"></canvas>
             <div class="dna-stats">
-                ST-W: ${parentDNA.stemWidth} | ST-L: ${parentDNA.stemLength}<br>PT-W: ${parentDNA.petalWidth} | NUM: ${parentDNA.petalNumber}
+                <strong>Stem Width:</strong> ${parentDNA.stemWidth}<br>
+                <strong>Stem Length:</strong> ${parentDNA.stemLength}<br>
+                <strong>Leaf Width:</strong> ${parentDNA.leafWidth}<br>
+                <strong>Leaf Length:</strong> ${parentDNA.leafLength}<br>
+                <strong>Petal Width:</strong> ${parentDNA.petalWidth}<br>
+                <strong>Petal Length:</strong> ${parentDNA.petalLength}<br>
+                <strong>Petal Count:</strong> ${parentDNA.petalNumber}<br>
+                <strong>Color:</strong> ${parentDNA.hue}°
             </div>
         </div>`;
         drawFlower(document.getElementById('p-canv'), parentDNA);
@@ -293,8 +278,15 @@
             const dna = (i === 4) ? {...parentDNA} : mutate(parentDNA);
             const card = document.createElement('div');
             card.className = 'flower-container';
-            card.innerHTML = `<canvas id="off-${i}" width="150" height="150"></canvas><div class="dna-stats">
-                ST-W: ${dna.stemWidth} | ST-L: ${dna.stemLength}<br>PT-W: ${dna.petalWidth} | NUM: ${dna.petalNumber}</div>`;
+            card.innerHTML = `<canvas id="off-${i}" width="220" height="220"></canvas><div class="dna-stats">
+                <strong>Stem Width:</strong> ${dna.stemWidth}<br>
+                <strong>Stem Length:</strong> ${dna.stemLength}<br>
+                <strong>Leaf Width:</strong> ${dna.leafWidth}<br>
+                <strong>Leaf Length:</strong> ${dna.leafLength}<br>
+                <strong>Petal Width:</strong> ${dna.petalWidth}<br>
+                <strong>Petal Length:</strong> ${dna.petalLength}<br>
+                <strong>Petal Count:</strong> ${dna.petalNumber}<br>
+                <strong>Color:</strong> ${dna.hue}°</div>`;
             grid.appendChild(card);
             drawFlower(document.getElementById(`off-${i}`), dna);
             card.onclick = () => {
