@@ -1,0 +1,540 @@
+<html>
+<head>
+    <title>Evolutionary Flowers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            background: #f4f4f9; 
+            margin: 0;
+            padding-bottom: 50px; 
+            color: #2d3436;
+        }
+        
+        header {
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h2 { margin: 0 0 10px 0; color: #2c3e50; }
+
+        /* Instructions Section */
+        #instructions {
+            max-width: 700px;
+            margin: 0 auto 20px;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        #instructions h3 { margin-top: 0; color: #2ecc71; font-size: 1.1rem; }
+        #instructions ol { padding-left: 20px; margin-bottom: 0; }
+        
+        #inspiration-area { 
+            margin: 15px auto; 
+            min-height: 60px; 
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #e1f5fe;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed #03a9f4;
+        }
+
+        .goal-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #01579b;
+            font-weight: 800;
+        }
+
+        .btn {
+            background-color: #4CAF50; color: white; border: none; 
+            padding: 10px 20px; border-radius: 8px; cursor: pointer;
+            font-size: 14px; font-weight: 600; transition: all 0.2s; 
+            margin: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn:hover { background-color: #45a049; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(0); }
+        
+        .btn-secondary { background-color: #636e72; }
+        .btn-secondary:hover { background-color: #2d3436; }
+
+        .btn-info { background-color: #03a9f4; }
+        .btn-info:hover { background-color: #0288d1; }
+
+        #inspirationText { 
+            font-style: italic; 
+            color: #0984e3; 
+            font-weight: 600;
+            line-height: 1.4;
+            font-size: 1.1rem;
+        }
+
+        /* Main Layout */
+        #simulation-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .section-title { 
+            font-size: 1.1em; 
+            color: #636e72; 
+            margin-bottom: 15px; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        #arrow { 
+            font-size: 3em; 
+            color: #b2bec3; 
+            align-self: center;
+            user-select: none;
+        }
+
+        #offspring-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 160px); 
+            gap: 15px; 
+            justify-content: center; 
+        }
+
+        .flower-container { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .main-canvas { 
+            background: #fff; 
+            width: 140px; 
+            height: 140px; 
+            display: block;
+        }
+        
+        #offspring-grid .flower-container { cursor: pointer; }
+        #offspring-grid .flower-container:hover { 
+            transform: scale(1.03); 
+            border-color: #4CAF50; 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        /* DNA Stats & Legend */
+        .dna-stats {
+            display: none;
+            background-color: #f8f9fa;
+            color: #2d3436;
+            text-align: left;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace; 
+            font-size: 11px; 
+            line-height: 1.3;
+            width: 120px;
+            margin-top: 10px;
+            border: 1px solid #e1e4e8;
+        }
+        
+        #dna-legend {
+            display: none;
+            max-width: 700px;
+            margin: 10px auto;
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        #dna-legend h4 { margin: 0 0 10px 0; color: #856404; }
+        .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        body.show-stats .dna-stats, body.show-stats #dna-legend { display: block; }
+
+        /* History Table */
+        #history-area { 
+            margin: 30px auto; 
+            display: none; 
+            max-width: 950px;
+            padding: 0 20px;
+        }
+        
+        table { 
+            margin: 0 auto; 
+            border-collapse: collapse;
+            width: 100%; 
+            background: white; 
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        th, td { padding: 10px 5px; text-align: center; font-size: 13px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
+        th { background-color: #4CAF50; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; }
+        
+        .history-thumb {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+
+        #bottom-controls { margin-top: 40px; padding: 20px; }
+        
+        .credits { 
+            font-size: 12px; 
+            color: #b2bec3; 
+            margin-top: 40px; 
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            #offspring-grid { grid-template-columns: repeat(2, 160px); }
+            #arrow { transform: rotate(90deg); margin: 20px 0; }
+            #simulation-area { flex-direction: column; align-items: center; }
+            .legend-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Artificial Selection Simulator</h2>
+        <p>Generation: <strong id="genCount">1</strong></p>
+    </header>
+
+    <div id="instructions">
+        <h3>How to Play</h3>
+        <ol>
+            <li>Look at the <strong>Breeding Goal</strong>.</li>
+            <li>Examine the 9 <strong>Offspring</strong>. They have random mutations.</li>
+            <li>Click the flower closest to your goal to make it the <strong>New Parent</strong>.</li>
+            <li>Watch the generation count and history chart to track your evolution progress.</li>
+        </ol>
+    </div>
+    
+    <div id="inspiration-area">
+        <div class="goal-label">Current Breeding Goal</div>
+        <span id="inspirationText">Loading goal...</span>
+        <button id="resetGoalBtn" class="btn btn-info">New Goal & Refresh Grid</button>
+    </div>
+
+    <div id="dna-legend">
+        <h4>DNA Key: Understanding the Letters</h4>
+        <div class="legend-grid">
+            <div>
+                <strong>ST-W:</strong> Stem Width (how thick the stem is)<br>
+                <strong>ST-L:</strong> Stem Length (how tall the plant grows)<br>
+                <strong>LF-W:</strong> Leaf Width (how wide leaves are)<br>
+                <strong>LF-L:</strong> Leaf Length (how long leaves stick out)
+            </div>
+            <div>
+                <strong>PT-W:</strong> Petal Width (breadth of each petal)<br>
+                <strong>PT-L:</strong> Petal Length (distance petals extend)<br>
+                <strong>NUM:</strong> Petal Count (number of petals around center)<br>
+                <strong>HUE:</strong> Color (the specific color on the spectrum)
+            </div>
+        </div>
+    </div>
+
+    <div id="simulation-area">
+        <div>
+            <div class="section-title">Current Parent</div>
+            <div id="parent-container"></div>
+        </div>
+
+        <div id="arrow">➔</div>
+
+        <div>
+            <div class="section-title">Mutated Offspring</div>
+            <div id="offspring-grid"></div>
+        </div>
+    </div>
+
+    <div id="bottom-controls">
+        <button id="toggleStatsBtn" class="btn btn-secondary">Toggle DNA Data</button>
+        <button id="historyBtn" class="btn btn-secondary">View Lineage History</button>
+    </div>
+
+    <div id="history-area">
+        <table>
+            <thead>
+                <tr>
+                    <th>Gen</th>
+                    <th>Appearance</th>
+                    <th>ST-W</th>
+                    <th>ST-L</th>
+                    <th>LF-W</th>
+                    <th>LF-L</th>
+                    <th>PT-W</th>
+                    <th>PT-L</th>
+                    <th>NUM</th>
+                    <th>HUE</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+            </tbody>
+        </table>
+    </div>
+
+    <p class="credits">
+        Inspired by Richard Dawkins' "Biomorphs".<br>
+        Mutations occur randomly during each breeding cycle.
+    </p>
+
+<script>
+    let generation = 1;
+    const initialDNA = {
+        stemWidth: 10, stemLength: 10, leafWidth: 10, leafLength: 10, 
+        petalWidth: 10, petalLength: 15, petalNumber: 8, hue: 340 
+    };
+    
+    let currentParentDNA = { ...initialDNA };
+    let historyLog = [{ ...initialDNA }];
+
+    const inspirations = [
+        "Breed the tallest possible flower.",
+        "Aim for a flower with huge, bright yellow petals.",
+        "Can you breed a flower with a tiny stem but massive leaves?",
+        "Create a dense 'pom-pom' flower with lots of tiny blue petals.",
+        "See if you can breed a flower that looks like a simple blade of grass.",
+        "Try to breed a perfectly proportional, tiny pink flower.",
+        "Breed a thick, stubby plant with a massive stem and a tiny flower.",
+        "Make the leaves as small as physically possible.",
+        "Aim for a flower with exactly 3 giant petals.",
+        "Create a 'Sun-like' flower: Orange hue, high petal count, long petals."
+    ];
+
+    function setNewGoal() {
+        const randomIndex = Math.floor(Math.random() * inspirations.length);
+        document.getElementById('inspirationText').innerText = inspirations[randomIndex];
+    }
+
+    document.getElementById('resetGoalBtn').addEventListener('click', () => {
+        generation = 1;
+        currentParentDNA = { ...initialDNA };
+        historyLog = [{ ...initialDNA }];
+        setNewGoal();
+        updateHistoryTable();
+        generateSimulation(currentParentDNA);
+    });
+
+    document.getElementById('toggleStatsBtn').addEventListener('click', () => {
+        document.body.classList.toggle('show-stats');
+    });
+
+    const historyArea = document.getElementById('history-area');
+    document.getElementById('historyBtn').addEventListener('click', () => {
+        historyArea.style.display = (historyArea.style.display === 'none') ? 'block' : 'none';
+    });
+
+    function mutate(val, min, max, isHue = false) {
+        if (isHue) {
+            const change = (Math.random() - 0.5) * 40;
+            return Math.round((val + change + 360) % 360);
+        }
+        const change = Math.round((Math.random() - 0.5) * 6);
+        return Math.min(max, Math.max(min, val + change));
+    }
+
+    function createMutatedDNA(parentDNA) {
+        return {
+            stemWidth: mutate(parentDNA.stemWidth, 2, 30),
+            stemLength: mutate(parentDNA.stemLength, 5, 30),
+            leafWidth: mutate(parentDNA.leafWidth, 2, 40),
+            leafLength: mutate(parentDNA.leafLength, 2, 40),
+            petalWidth: mutate(parentDNA.petalWidth, 2, 40),
+            petalLength: mutate(parentDNA.petalLength, 2, 40),
+            petalNumber: mutate(parentDNA.petalNumber, 3, 36),
+            hue: mutate(parentDNA.hue, 0, 360, true)
+        };
+    }
+
+    function drawFlower(canvas, dna) {
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+        ctx.clearRect(0, 0, w, h);
+        
+        // Dynamic scaling based on canvas size
+        const scale = w / 150;
+        ctx.save();
+        ctx.scale(scale, scale);
+
+        const centerX = 75;
+        const bottomY = 140;
+        const stemHeight = dna.stemLength * 3.5; 
+        const flowerCenterY = bottomY - stemHeight;
+        const stemMidY = bottomY - (stemHeight / 2);
+        const stemThick = Math.max(1, dna.stemWidth * 0.5); 
+
+        // Stem
+        ctx.beginPath();
+        ctx.moveTo(centerX, bottomY);
+        ctx.lineTo(centerX, flowerCenterY);
+        ctx.strokeStyle = "#27ae60";
+        ctx.lineWidth = stemThick;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        // Leaves
+        ctx.beginPath();
+        const leafOffset = (stemThick / 2) + (dna.leafLength / 2);
+        ctx.ellipse(centerX + leafOffset, stemMidY, dna.leafLength / 2, dna.leafWidth / 2, Math.PI/6, 0, 2 * Math.PI);
+        ctx.ellipse(centerX - leafOffset, stemMidY + 10, dna.leafLength / 2.5, dna.leafWidth / 2.5, -Math.PI/4, 0, 2 * Math.PI);
+        ctx.fillStyle = "#2ecc71";
+        ctx.fill();
+
+        // Petals
+        ctx.fillStyle = `hsl(${dna.hue}, 80%, 60%)`;
+        ctx.strokeStyle = `hsl(${dna.hue}, 80%, 40%)`;
+        ctx.lineWidth = 1;
+        
+        for (let i = 0; i < dna.petalNumber; i++) {
+            ctx.save();
+            ctx.translate(centerX, flowerCenterY);
+            ctx.rotate((i * 2 * Math.PI) / dna.petalNumber);
+            ctx.beginPath();
+            ctx.ellipse(0, dna.petalLength / 2 + 2, dna.petalWidth / 2, dna.petalLength / 2, 0, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        // Center
+        ctx.beginPath();
+        ctx.arc(centerX, flowerCenterY, Math.max(3, dna.stemWidth * 0.4), 0, 2 * Math.PI);
+        ctx.fillStyle = "#f1c40f";
+        ctx.fill();
+        ctx.stroke();
+        
+        ctx.restore();
+    }
+
+    function buildStatBlock(dna) {
+        const stats = document.createElement('div');
+        stats.className = 'dna-stats';
+        stats.innerHTML = `
+            <strong>GENES</strong><br>
+            ST-W: ${dna.stemWidth}<br>
+            ST-L: ${dna.stemLength}<br>
+            LF-W: ${dna.leafWidth}<br>
+            LF-L: ${dna.leafLength}<br>
+            PT-W: ${dna.petalWidth}<br>
+            PT-L: ${dna.petalLength}<br>
+            NUM:  ${dna.petalNumber}<br>
+            HUE:  ${dna.hue}°
+        `;
+        return stats;
+    }
+
+    function updateHistoryTable() {
+        const tbody = document.getElementById('historyBody');
+        tbody.innerHTML = ''; 
+
+        historyLog.forEach((dna, index) => {
+            const row = document.createElement('tr');
+            
+            const thumbTd = document.createElement('td');
+            const thumbCanvas = document.createElement('canvas');
+            thumbCanvas.width = 60;
+            thumbCanvas.height = 60;
+            thumbCanvas.className = 'history-thumb';
+            thumbTd.appendChild(thumbCanvas);
+
+            row.innerHTML = `<td><strong>${index + 1}</strong></td>`;
+            row.appendChild(thumbTd);
+            row.innerHTML += `
+                <td>${dna.stemWidth}</td>
+                <td>${dna.stemLength}</td>
+                <td>${dna.leafWidth}</td>
+                <td>${dna.leafLength}</td>
+                <td>${dna.petalWidth}</td>
+                <td>${dna.petalLength}</td>
+                <td>${dna.petalNumber}</td>
+                <td><span style="display:inline-block; width:10px; height:10px; background:hsl(${dna.hue},80%,60%); border-radius:50%; margin-right:5px;"></span>${dna.hue}°</td>
+            `;
+            tbody.appendChild(row);
+            
+            // Immediate draw since thumbCanvas is small and we aren't using complex scaling
+            setTimeout(() => drawFlower(thumbCanvas, dna), 10);
+        });
+    }
+
+    function generateSimulation(parentDNA) {
+        currentParentDNA = parentDNA;
+        document.getElementById('genCount').innerText = generation;
+
+        const parentContainer = document.getElementById('parent-container');
+        parentContainer.innerHTML = ''; 
+        
+        const parentWrapper = document.createElement('div');
+        parentWrapper.className = 'flower-container';
+        const parentCanvas = document.createElement('canvas');
+        parentCanvas.className = 'main-canvas';
+        parentCanvas.width = 150; parentCanvas.height = 150;
+        drawFlower(parentCanvas, parentDNA);
+        
+        parentWrapper.appendChild(parentCanvas);
+        parentWrapper.appendChild(buildStatBlock(parentDNA));
+        parentContainer.appendChild(parentWrapper);
+
+        const offspringGrid = document.getElementById('offspring-grid');
+        offspringGrid.innerHTML = ''; 
+
+        for (let i = 0; i < 9; i++) {
+            const container = document.createElement('div');
+            container.className = 'flower-container'; 
+            const canvas = document.createElement('canvas');
+            canvas.className = 'main-canvas';
+            canvas.width = 150; canvas.height = 150;
+            
+            const dna = (i === 4) ? { ...parentDNA } : createMutatedDNA(parentDNA);
+            drawFlower(canvas, dna);
+            
+            container.onclick = () => {
+                generation++;
+                historyLog.push(dna); 
+                updateHistoryTable(); 
+                generateSimulation(dna);
+            };
+
+            container.appendChild(canvas);
+            container.appendChild(buildStatBlock(dna));
+            offspringGrid.appendChild(container);
+        }
+    }
+
+    window.onload = () => {
+        setNewGoal();
+        updateHistoryTable();
+        generateSimulation(currentParentDNA);
+    };
+</script>
+</body>
+</html>
