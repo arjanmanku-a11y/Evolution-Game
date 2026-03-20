@@ -2,6 +2,7 @@
 <head>
     <title>Evolutionary Flowers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Oxygen:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
@@ -102,8 +103,9 @@
         #offspring-grid .flower-container:hover { transform: scale(1.03); border-color: #4CAF50; }
 
         .dna-stats {
-            display: none; background: #f8f9fa; padding: 8px; border-radius: 6px;
-            font-family: monospace; font-size: 10px; text-align: left; width: 120px; margin-top: 8px;
+            display: none; background: #f8f9fa; padding: 10px; border-radius: 6px;
+            font-family: 'Oxygen', sans-serif; font-size: 13px; text-align: left; width: 130px; margin-top: 8px;
+            line-height: 1.4;
         }
         body.show-stats .dna-stats, body.show-stats #dna-legend { display: block; }
 
@@ -143,7 +145,7 @@
         <strong>DNA Glossary:</strong>
         <div class="legend-grid">
             <div>ST-W: Stem Width | ST-L: Stem Length | LF-W: Leaf Width</div>
-            <div>PT-W: Petal Width | PT-L: Petal Length | NUM: Count | HUE: Color</div>
+            <div>PT-W: Petal Width | PT-L: Petal Length | NUM: Petal Count | HUE: Color</div>
         </div>
     </div>
 
@@ -184,14 +186,14 @@
     let historyLog = [{ ...initialDNA }];
 
     const goals = [
-        "The 'Sunflower': Stem Length (ST-L) > 25, 20+ thin yellow petals (HUE ~50), and huge leaves.",
-        "The 'Rose': Stem Width (ST-W) ~5, 12 thick red petals (HUE ~0), and tiny leaves.",
-        "The 'Cactus': Huge thick stem (ST-W > 30, ST-L < 15), tiny leaves, and a bright pink flower (HUE ~320).",
-        "The 'Pinwheel': Exactly 5 long, thin cyan petals (HUE ~180) on a medium stem.",
-        "The 'Beanstalk': Max stem length (ST-L > 40), min stem width, and a tiny green flower (HUE ~120).",
-        "The 'Disproportion': Max stem width (ST-W > 40), min stem length, and exactly 3 blue petals (HUE ~240).",
-        "The 'Violet': Stem width of ~20, tiny leaves (LF-W ~2), and 15 purple petals (HUE ~280).",
-        "The 'Pom-Pom': Short stem, massive petal width and length (PT-W & PT-L > 35), with over 30 petals."
+        "The 'Sunflower': Breed a tall plant (High ST-L) with large leaves (High LF-W & LF-L) and many thin, yellow petals (High NUM, Low PT-W, Hue ~50).",
+        "The 'Rose': Select for a thin stem (Low ST-W), tiny leaves (Low LF-W & LF-L), and wide red petals (High PT-W, Hue ~0).",
+        "The 'Cactus': Evolve a thick, stubby stem (High ST-W, Low ST-L) with barely visible leaves and bright pink petals (Hue ~320).",
+        "The 'Pinwheel': Stabilize the petal count at exactly 5 (NUM = 5). Aim for long, thin cyan petals (High PT-L, Low PT-W, Hue ~180).",
+        "The 'Vine': Directional selection for an extremely long, thin stem (High ST-L, Low ST-W) with a tiny green flower (Hue ~120).",
+        "The 'Shrub': Breed a very wide but extremely short plant (High ST-W, Low ST-L) with exactly 3 blue petals (NUM = 3, Hue ~240).",
+        "The 'Violet': Select for a medium stem, extremely narrow leaves (Low LF-W), and exactly 15 purple petals (NUM = 15, Hue ~280).",
+        "The 'Pom-Pom': Evolve a massive, dense flower head by maximizing petal width, length, and petal count (High PT-W, PT-L, and NUM) on a short stem."
     ];
 
     function setNewGoal() { document.getElementById('inspirationText').innerText = goals[Math.floor(Math.random() * goals.length)]; }
@@ -277,7 +279,12 @@
         currentParentDNA = parentDNA;
         document.getElementById('genCount').innerText = generation;
         const pCont = document.getElementById('parent-container');
-        pCont.innerHTML = '<div class="flower-container"><canvas id="p-canv" width="150" height="150"></canvas></div>';
+        pCont.innerHTML = `<div class="flower-container">
+            <canvas id="p-canv" width="150" height="150"></canvas>
+            <div class="dna-stats">
+                ST-W: ${parentDNA.stemWidth} | ST-L: ${parentDNA.stemLength}<br>PT-W: ${parentDNA.petalWidth} | NUM: ${parentDNA.petalNumber}
+            </div>
+        </div>`;
         drawFlower(document.getElementById('p-canv'), parentDNA);
 
         const grid = document.getElementById('offspring-grid');
